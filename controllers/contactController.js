@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const Contact = require("../models/contactModel");
 
 //@desc get all contacts
 //@route GET /api/contacts
@@ -8,7 +9,8 @@ const asyncHandler = require("express-async-handler");
 // async handler handles try catch so we dont have to use try catch
 
 const getContacts = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Get Contact list" });
+  const contacts = await Contact.find({});
+  res.status(200).json(contacts);
 });
 
 const getContactsI = asyncHandler(async (req, res) => {
@@ -19,9 +21,15 @@ const createContact = asyncHandler(async (req, res) => {
   console.log(req.body);
   const { name, email } = req.body;
   if (!name || !email) {
-    res.status(400).json({ message: "Please provide name and email" });
+    res.status(400);
+    throw new Error("Please provide name and email");
   }
-  res.status(200).json({ message: "Create Contact list" });
+  const contact = await Contact.create({
+    name,
+    email,
+    phone,
+  });
+  res.status(201).json(contact);
 });
 
 const deleteContact = asyncHandler(async (req, res) => {
