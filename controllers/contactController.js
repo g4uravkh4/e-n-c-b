@@ -9,7 +9,11 @@ const Contact = require("../models/contactModel");
 // async handler handles try catch so we dont have to use try catch
 
 const getContacts = asyncHandler(async (req, res) => {
-  const contacts = await Contact.find({});
+  const contacts = await Contact.findByID(req.params.id);
+  if (!contacts) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
   res.status(200).json(contacts);
 });
 
@@ -37,7 +41,22 @@ const deleteContact = asyncHandler(async (req, res) => {
 });
 
 const updateContact = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Update Contact list" });
+  const contacts = await Contact.findByID(req.params.id);
+  if (!contacts) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+
+  const updateContact = await Contact.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json(updateContact);
 });
 
 module.exports = {
