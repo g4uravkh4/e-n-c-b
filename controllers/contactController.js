@@ -38,6 +38,13 @@ const createContact = asyncHandler(async (req, res) => {
 
 const deleteContact = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Delete Contact list" });
+  const contacts = await Contact.findByID(req.params.id);
+  if (!contacts) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+  await contacts.remove();
+  res.status(200).json({ message: "Contact removed" });
 });
 
 const updateContact = asyncHandler(async (req, res) => {
